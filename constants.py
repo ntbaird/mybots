@@ -1,6 +1,6 @@
 import numpy as np
 
-loops = 1000
+loops = 150
 
 frontAmp = np.pi/2
 backAmp = np.pi/2
