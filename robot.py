@@ -29,7 +29,7 @@ class ROBOT:
     def Prepare_To_Act(self):
         self.motors = {}
         for jointName in pyrosim.jointNamesToIndices:
-            print(jointName)
+            #print(jointName)
             self.motors[jointName] = MOTOR(jointName)
 
     def Act(self, t):
@@ -38,13 +38,13 @@ class ROBOT:
                 jointName = self.nn.Get_Motor_Neurons_Joint(neuronName)
                 desiredAngle = self.nn.Get_Value_Of(neuronName)
                 self.motors[jointName].Set_Value(desiredAngle, self.robotId)
-                print(jointName, desiredAngle)
+                #print(jointName, desiredAngle)
         #for m in self.motors.values():
         #    m.Set_Value(t, self.robotId)
 
     def Think(self):
         self.nn.Update()
-        self.nn.Print()
+        #self.nn.Print()
 
     # Can be deleted?
     def Save_Values(self):
@@ -52,4 +52,13 @@ class ROBOT:
             s.Save_Values()
         for m in self.sensors.values():
             m.Save_Values()
+
+    def Get_Fitness(self):
+        stateOfLinkZero = p.getLinkState(self.robotId, 0)
+        positionOfLinkZero = stateOfLinkZero[0]
+        xCoordOfLinkZero = positionOfLinkZero[0]
+
+        f = open("data/fitness.txt", "w")
+        f.write(str(xCoordOfLinkZero))
+        f.close()
     

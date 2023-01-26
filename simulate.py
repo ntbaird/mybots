@@ -1,4 +1,9 @@
 from simulation import SIMULATION
+import sys
 
-simulation = SIMULATION()
-simulation.Run()
+
+directOrGUI = sys.argv[1]
+simulation = SIMULATION(directOrGUI)
+
+simulation.Run(directOrGUI)
+simulation.Get_Fitness()
