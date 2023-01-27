@@ -8,7 +8,7 @@ import time
 import numpy as np
 
 class SIMULATION:
-    def __init__(self, directOrGUI):
+    def __init__(self, directOrGUI, id):
         if(directOrGUI == "DIRECT"):
             self.physicsClient = p.connect(p.DIRECT)
         else:
@@ -17,7 +17,7 @@ class SIMULATION:
         p.setGravity(0,0,-13.8)
 
         self.world = WORLD()
-        self.robot = ROBOT()
+        self.robot = ROBOT(id)
     
     def Run(self, direct):
         backLegSensorValues = np.zeros(c.loops)

@@ -1,6 +1,6 @@
 import numpy as np
 
-loops = 600
+loops = 400
 
 frontAmp = np.pi/2
 backAmp = np.pi/2
@@ -11,4 +11,5 @@ backFrq = 20
 frontPO = np.pi/4.0
 backPO = 0
 
-numberOfGenerations = 20
+numberOfGenerations = 10
+populationSize = 10

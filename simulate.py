@@ -3,7 +3,8 @@ import sys
 
 
 directOrGUI = sys.argv[1]
-simulation = SIMULATION(directOrGUI)
+id = sys.argv[2]
+simulation = SIMULATION(directOrGUI, id)
 
 simulation.Run(directOrGUI)
 simulation.Get_Fitness()
