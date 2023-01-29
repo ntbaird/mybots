@@ -20,14 +20,14 @@ class SIMULATION:
         self.robot = ROBOT(id)
     
     def Run(self, direct):
-        backLegSensorValues = np.zeros(c.loops)
-        frontLegSensorValues = np.zeros(c.loops)
+        #backLegSensorValues = np.zeros(c.loops)
+        #frontLegSensorValues = np.zeros(c.loops)
         d = False
         if(direct == "DIRECT"):
             d = True
 
-        targetValues = c.frontAmp * np.sin(c.frontFrq * np.linspace(0, 2*np.pi, c.loops) + c.frontPO)
-        targetValues2 = c.backAmp * np.sin(c.backFrq * np.linspace(0, 2*np.pi, c.loops) + c.backPO)
+        #targetValues = c.frontAmp * np.sin(c.frontFrq * np.linspace(0, 2*np.pi, c.loops) + c.frontPO)
+        #targetValues2 = c.backAmp * np.sin(c.backFrq * np.linspace(0, 2*np.pi, c.loops) + c.backPO)
 
         for i in range(c.loops):
             p.stepSimulation()
