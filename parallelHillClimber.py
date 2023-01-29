@@ -28,7 +28,7 @@ class PARALLEL_HILL_CLIMBER:
 
         self.Evaluate(self.children)       
         
-        self.Print()
+        #self.Print()
         self.Select()
 
     def Evaluate(self, solutions):
