@@ -52,7 +52,7 @@ class PARALLEL_HILL_CLIMBER:
 
     def Select(self):
         for key in self.children:
-            if(self.children[key].fitness < self.parents[key].fitness):
+            if(self.children[key].fitness > self.parents[key].fitness):
                 self.parents[key] = self.children[key]
 
     def Print(self):
@@ -62,5 +62,5 @@ class PARALLEL_HILL_CLIMBER:
             print("")
 
     def Show_Best(self):
-        best = min(self.parents, key = lambda x: self.parents[x].fitness)
+        best = max(self.parents, key = lambda x: self.parents[x].fitness)
         self.parents[best].End_Simulations()

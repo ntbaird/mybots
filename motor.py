@@ -15,9 +15,6 @@ class MOTOR:
         self.amp = c.frontAmp
         self.frq = c.frontFrq
         self.pO = c.frontPO
-        
-        if(self.jointName == b'Torso_BackLeg'):
-            self.frq /= 2
 
         self.values = self.amp * np.sin(self.frq * np.linspace(0, 2*np.pi, c.loops) + self.pO)
 
@@ -27,7 +24,7 @@ class MOTOR:
             jointName = self.jointName,
             controlMode = p.POSITION_CONTROL,
             targetPosition = desiredAngle,
-            maxForce = 200)
+            maxForce = 400)
 
     def Save_Values(self):
         np.save("data\\"+self.jointName, self.values)

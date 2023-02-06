@@ -58,10 +58,13 @@ class ROBOT:
     def Get_Fitness(self):
         stateOfLinkZero = p.getLinkState(self.robotId, 0)
         positionOfLinkZero = stateOfLinkZero[0]
-        xCoordOfLinkZero = positionOfLinkZero[0]
+        yCoordOfLinkZero = positionOfLinkZero[1]
+        zCoordOfLinkZero = positionOfLinkZero[2]
+
+        sumCoords = 3*yCoordOfLinkZero + zCoordOfLinkZero
 
         f = open("data/tmp"+str(self.id)+".txt", "w")
-        f.write(str(xCoordOfLinkZero))
+        f.write(str(sumCoords))
         f.close()
         os.rename("data/tmp"+str(self.id)+".txt" , "data/fitness"+str(self.id)+".txt")
 
