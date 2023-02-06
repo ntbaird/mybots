@@ -1,4 +1,4 @@
-# mybots
+# OCTOPOD Project!
 Assignment 5 for CS 396 - Artificial Life
 
 TO RUN THE SIMULATION:
