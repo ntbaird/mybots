@@ -7,7 +7,7 @@ In your Python terminal of choice, run search.py
 This may look like the following:
 
 python search.py
-python3 search.py
+or python3 search.py
 
 If any problems arise with inaccessible fitness files or locked body.urdf, please try running the command again.
 
