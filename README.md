@@ -20,6 +20,10 @@ Karl Sims' Evolved Creatures in competition:
 ![sims 2](https://user-images.githubusercontent.com/91085742/220190493-56745a34-700f-4147-a13d-ff79b7fda5b2.jpg)
 ![sims 3](https://user-images.githubusercontent.com/91085742/220190503-114b7c2a-8aa6-4c5a-97ee-ce1cfe636143.jpg)
 
+Additional inspiration: Pokémon's Geodude
+
+![image](https://user-images.githubusercontent.com/91085742/220191334-90d7a5a9-97ee-4478-b3b2-3ea1abd71ceb.png)
+
 Generated bots:
 
 ![image](https://user-images.githubusercontent.com/91085742/220190664-ca4085d6-d662-40a3-a9fd-3980f98c7017.png)
