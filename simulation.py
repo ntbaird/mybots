@@ -13,8 +13,9 @@ class SIMULATION:
             self.physicsClient = p.connect(p.DIRECT)
         else:
             self.physicsClient = p.connect(p.GUI)
+            p.configureDebugVisualizer(p.COV_ENABLE_GUI,0)
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
-        p.setGravity(0,0,-9.8)
+        p.setGravity(0,0,-20)
 
         self.world = WORLD()
         self.robot = ROBOT(id)

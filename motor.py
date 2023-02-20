@@ -24,7 +24,7 @@ class MOTOR:
             jointName = self.jointName,
             controlMode = p.POSITION_CONTROL,
             targetPosition = desiredAngle,
-            maxForce = 400)
+            maxForce = 200)
 
     def Save_Values(self):
         np.save("data\\"+self.jointName, self.values)
