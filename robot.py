@@ -12,13 +12,11 @@ class ROBOT:
         self.robotId = p.loadURDF("body.urdf")
         self.id = id
         pyrosim.Prepare_To_Simulate(self.robotId)
-        self.nn = NEURAL_NETWORK("brain"+str(self.id)+".nndf")
+        self.nn = NEURAL_NETWORK("brains/brain"+str(self.id)+".nndf")
         
 
         self.Prepare_To_Sense()
         self.Prepare_To_Act()
-
-        os.system("del brain"+str(self.id)+".nndf")
 
     def Prepare_To_Sense(self):
         self.sensors = {}
@@ -65,9 +63,9 @@ class ROBOT:
 
         sumCoords = xCoordOfLinkZero
 
-        f = open("data/tmp"+str(self.id)+".txt", "w")
+        f = open("tmp"+str(self.id)+".txt", "w")
         f.write(str(sumCoords))
         f.close()
-        os.rename("data/tmp"+str(self.id)+".txt" , "data/fitness"+str(self.id)+".txt")
+        os.rename("tmp"+str(self.id)+".txt" , "fitness"+str(self.id)+".txt")
 
     

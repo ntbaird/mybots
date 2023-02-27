@@ -12,6 +12,7 @@ class SOLUTION:
         self.id = id
         self.sensorNames = []
         self.motorNames = []
+        self.existing = 0
         
     def Set_ID(self, num):
         self.id = num
@@ -33,19 +34,36 @@ class SOLUTION:
         os.system("start /B python simulate.py " + dOG + " " + str(self.id))
 
     def Wait_For_Simulation_To_End(self):
-        while not os.path.exists("data/fitness"+str(self.id)+".txt"):
+        while not os.path.exists("fitness"+str(self.id)+".txt"):
             time.sleep(.01)
-        f = open("data/fitness"+str(self.id)+".txt", "r")
+        while True:
+            try:
+                f = open("fitness"+str(self.id)+".txt", "r")
+                break
+            except:
+                pass
         self.fitness = float(f.read())
         
         f.close()
-        os.remove("data/fitness"+str(self.id)+".txt")
+        os.remove("fitness"+str(self.id)+".txt")
 
     def Mutate(self):
-        row = random.randint(0, len(self.sensorNames)-1)
-        col = random.randint(0, len(self.motorNames)-1)
+        row = random.randint(0, min(len(self.sensorNames)-1, c.maxSegments*3-1))
+        col = random.randint(0, min(len(self.motorNames)-1, c.maxSegments*3-1))
 
         self.weights[row, col] = random.random() * 2 - 1
+
+        segChoice = random.randint(2, self.segments-1)
+        dimensionChoice = random.randint(0, 3)
+        self.modifyBody(segChoice, dimensionChoice)
+
+    def modifyBody(self, seg, dimC):
+        if(dimC == 0):
+            self.segLengths[seg] += random.random()
+        elif(dimC == 1):
+            self.segWidths[seg] += random.random()
+        else:
+            self.segHeights[seg] += random.random()
 
     def Create_World(self):
         pyrosim.Start_SDF("world.sdf")
@@ -60,16 +78,17 @@ class SOLUTION:
     def Generate_Body(self):
         pyrosim.Start_URDF("body.urdf")
 
-        segments = np.random.randint(low=5, high=c.maxSegments)
-        #segments = 4
-        sensors = np.random.randint(0, 2, size=segments)
-        segLengths = np.random.rand(segments)+.01
-        segHeights = np.random.rand(segments)+.3
-        segWidths = np.random.rand(segments)+.3
-        cStyle = np.random.randint(0, 3, size=segments)
+        if(not self.existing):
+            np.random.seed(c.seed)
+            self.segments = np.random.randint(low=5, high=c.maxSegments)        
+            self.segLengths = np.random.rand(self.segments)+.01
+            self.segHeights = np.random.rand(self.segments)+.3
+            self.segWidths = np.random.rand(self.segments)+.3
+            self.sensors = np.random.randint(0, 2, size=self.segments)
+        cStyle = np.random.randint(0, 3, size=self.segments)
         tallest = 3      
         #head counts as zero
-        if sensors[0] == 1:
+        if self.sensors[0] == 1:
             pyrosim.Send_Cube(name="0", pos=[0, 0, tallest] , size=[.5, .5, .5], 
                                 color='0 0 1.0 1.0', colorName = 'Green')
             self.sensorNames.append(str(0))
@@ -81,17 +100,17 @@ class SOLUTION:
         # First segment
         pyrosim.Send_Joint( name = "0_"+str(1) , parent= "0" , child = str(1) , 
                            type = "revolute", position = [.25, 0, tallest],
-                            jointAxis="0 1 0")
+                            jointAxis="1 1 1")
         
         #position is half of OWN width for cubes
-        if sensors[1] == 1:
+        if self.sensors[1] == 1:
             self.sensorNames.append(str(1))
-            pyrosim.Send_Cube(name=str(1), pos=[segLengths[1]/2, 0, 0] , 
-                              size=[segLengths[1], segWidths[1], segHeights[1]], color='0 0 1.0 1.0', 
+            pyrosim.Send_Cube(name=str(1), pos=[self.segLengths[1]/2, 0, 0] , 
+                              size=[self.segLengths[1], self.segWidths[1], self.segHeights[1]], color='0 0 1.0 1.0', 
                               colorName = 'Green')
         else:
-            pyrosim.Send_Cube(name=str(1), pos=[segLengths[1]/2, 0, 0] , 
-                              size=[segLengths[1], segWidths[1], segHeights[1]], color='0 0 1.0 1.0', 
+            pyrosim.Send_Cube(name=str(1), pos=[self.segLengths[1]/2, 0, 0] , 
+                              size=[self.segLengths[1], self.segWidths[1], self.segHeights[1]], color='0 0 1.0 1.0', 
                               colorName = 'Blue')
 
         self.motorNames.append(str(0)+"_"+str(1))
@@ -102,28 +121,29 @@ class SOLUTION:
 
         # One side
         lastMove = 1
-        for i in range(2, segments):
+        for i in range(2, self.segments):
             boxColor = '0 0 1.0 1.0'
             boxColorName = 'Blue'
 
-            jMove, cMove = self.Get_Move(lastMove, cStyle[i], segWidths, -segLengths, segHeights, i)
+            jMove, cMove = self.Get_Move(lastMove, cStyle[i], self.segWidths, -self.segLengths, self.segHeights, i)
             lastMove = cStyle[i]
 
-            if sensors[i] == 1:
+            if self.sensors[i] == 1:
                 boxColor = '0 1.0 0 1.0'
                 boxColorName = 'Green'
                 self.sensorNames.append(str(i))
 
             if(i == 2):
                 pyrosim.Send_Joint(name = str(1)+"_"+str(curSeg) , parent= str(1) , child = str(curSeg) , 
-                                type = "revolute", position = [segLengths[i-1]/2, -segWidths[i-1]/2, 0], 
-                                jointAxis="0 1 0")
-                pyrosim.Send_Cube(name=str(curSeg), pos=[0, -segLengths[i]/2, 0] , size=[segWidths[i], segLengths[i], segHeights[i]], 
+                                type = "revolute", position = [self.segLengths[i-1]/2, -self.segWidths[i-1]/2, 0], 
+                                jointAxis="1 1 1")
+                pyrosim.Send_Cube(name=str(curSeg), pos=[0, -self.segLengths[i]/2, 0] , 
+                                  size=[self.segWidths[i], self.segLengths[i], self.segHeights[i]], 
                               color=boxColor, colorName = boxColorName)
             else:
                 pyrosim.Send_Joint( name = str(curSeg-1)+"_"+str(curSeg) , parent= str(curSeg-1) , child = str(curSeg) , 
-                                type = "revolute", position = jMove, jointAxis="1 0 0")
-                pyrosim.Send_Cube(name=str(curSeg), pos= cMove , size=[segWidths[i], segLengths[i], segHeights[i]], 
+                                type = "revolute", position = jMove, jointAxis="1 1 1")
+                pyrosim.Send_Cube(name=str(curSeg), pos= cMove , size=[self.segWidths[i], self.segLengths[i], self.segHeights[i]], 
                                 color=boxColor, colorName = boxColorName)
             
             self.motorNames.append(str(i-1)+"_"+str(i))
@@ -131,33 +151,34 @@ class SOLUTION:
 
         # Opposing side
         lastMove = 1
-        for j in range(2, segments):
+        for j in range(2, self.segments):
             boxColor = '0 0 1.0 1.0'
             boxColorName = 'Blue'
 
-            jMove, cMove = self.Get_Move(lastMove, cStyle[j], segWidths, segLengths, segHeights, j)
+            jMove, cMove = self.Get_Move(lastMove, cStyle[j], self.segWidths, self.segLengths, self.segHeights, j)
             lastMove = cStyle[j]
 
-            if sensors[j] == 1:
+            if self.sensors[j] == 1:
                 boxColor = '0 1.0 0 1.0'
                 boxColorName = 'Green'
                 self.sensorNames.append(str(j))
             
             if(j == 2):
                 pyrosim.Send_Joint(name = str(1)+"_"+str(curSeg) , parent= str(1) , child = str(curSeg) , 
-                                type = "revolute", position = [segLengths[j-1]/2, segWidths[j-1]/2, 0], 
-                                jointAxis="0 1 0")
+                                type = "revolute", position = [self.segLengths[j-1]/2, self.segWidths[j-1]/2, 0], 
+                                jointAxis="1 1 1")
                 self.motorNames.append(str(1)+"_"+str(curSeg))
-                pyrosim.Send_Cube(name=str(curSeg), pos=[0, segLengths[j]/2, 0] , size=[segWidths[j], segLengths[j], segHeights[j]], 
+                pyrosim.Send_Cube(name=str(curSeg), pos=[0, self.segLengths[j]/2, 0] , 
+                                  size=[self.segWidths[j], self.segLengths[j], self.segHeights[j]], 
                               color=boxColor, colorName = boxColorName)
             else:
                 pyrosim.Send_Joint( name = str(curSeg-1)+"_"+str(curSeg) , parent= str(curSeg-1) , child = str(curSeg) , 
-                                type = "revolute", position = jMove, jointAxis="1 0 0")
+                                type = "revolute", position = jMove, jointAxis="1 1 1")
                 self.motorNames.append(str(curSeg-1)+"_"+str(curSeg))
-                pyrosim.Send_Cube(name=str(curSeg), pos= cMove , size=[segWidths[j], segLengths[j], segHeights[j]], 
+                pyrosim.Send_Cube(name=str(curSeg), pos= cMove , size=[self.segWidths[j], self.segLengths[j], self.segHeights[j]], 
                               color=boxColor, colorName = boxColorName)
             curSeg += 1
-
+        self.existing = 1
 
         pyrosim.End()
 
@@ -187,7 +208,7 @@ class SOLUTION:
 
 
     def Generate_Brain(self):
-        pyrosim.Start_NeuralNetwork("brain"+str(self.id)+".nndf")
+        pyrosim.Start_NeuralNetwork("brains\\brain"+str(self.id)+".nndf")
 
         sensorNames = [*set(self.sensorNames)]
         motorNames = [*set(self.motorNames)]

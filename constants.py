@@ -1,6 +1,6 @@
 import numpy as np
 
-loops = 400
+loops = 1000
 
 frontAmp = np.pi*2
 backAmp = np.pi/2
@@ -11,12 +11,13 @@ backFrq = 20
 frontPO = np.pi/2.0
 backPO = 0
 
-numberOfGenerations = 0
-populationSize = 1
+numberOfGenerations = 200
+populationSize = 10
 
 numSensorNeurons = 4
 numMotorNeurons = 16
 
-maxSegments = 8
+maxSegments = 9
 
 motorJointRange = .5
+seed = 4
