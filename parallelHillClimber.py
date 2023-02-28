@@ -5,14 +5,16 @@ import os
 import numpy as np
 
 class PARALLEL_HILL_CLIMBER:
-    def __init__(self):
+    def __init__(self, seed):
         os.system("del brains\\brain*.nndf")
+        os.system("del bodies\\body*.urdf")
         os.system("del fitness*.txt")
         self.parents = {}
         self.nextAvailableID = 0
         self.fitnessProgression = np.zeros((c.numberOfGenerations))
+        self.seed = seed
         for i in range(c.populationSize):
-            self.parents[i] = SOLUTION(self.nextAvailableID)
+            self.parents[i] = SOLUTION(self.nextAvailableID, seed)
             self.nextAvailableID += 1
 
     def Evolve(self):
@@ -22,7 +24,6 @@ class PARALLEL_HILL_CLIMBER:
 
         for currentGeneration in range(c.numberOfGenerations):
             self.Evolve_For_One_Generation(currentGeneration)
-        print(self.fitnessProgression)
 
     def Evolve_For_One_Generation(self, gen):
         
@@ -33,7 +34,7 @@ class PARALLEL_HILL_CLIMBER:
         
         #self.Print()
         self.Select(gen)
-        self.CleanBrains()
+        self.cleanUp()
 
     def Evaluate(self, solutions):
         for key, val in solutions.items():
@@ -71,17 +72,23 @@ class PARALLEL_HILL_CLIMBER:
     def Show_Best(self):
         best = max(self.parents, key = lambda x: self.parents[x].fitness)
         self.parents[best].End_Simulations()
-        np.save("FitnessProgression.npy", np.array(self.fitnessProgression))
+        #np.save("FitnessProgression"+str(self.seed)+".npy", np.array(self.fitnessProgression))
 
     def saveForPlot(self, gen):
         best = max(self.parents, key = lambda x: self.parents[x].fitness)
         self.fitnessProgression[gen] = self.parents[best].fitness
 
-    def cleanBrains(self):
+    def cleanUp(self):
         best = max(self.parents, key = lambda x: self.parents[x].fitness)
         keepBrain = self.parents[best].id
-        for item in os.listdir(os.getcwd()+"\\brains"):
-            if(item != "brain"+str(keepBrain)+".nndf"):
-                os.system("del "+item)
-        pass
+
+        for item in os.listdir("brains\\"):
+            if(item[0] == str(self.seed)):
+                if(item != str(self.seed)+"seedbrain"+str(keepBrain)+".nndf"):
+                    os.system("del brains\\"+item)
+
+        for item in os.listdir("bodies\\"):
+            if(item[0] == str(self.seed)):
+                if(item != str(self.seed)+"seedbody"+str(keepBrain)+".urdf"):
+                    os.system("del bodies\\"+item)
         

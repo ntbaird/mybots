@@ -6,13 +6,14 @@ import time
 import constants as c
 
 class SOLUTION:
-    def __init__(self, id):
+    def __init__(self, id, seed):
         self.weights = np.random.rand(c.maxSegments*3, c.maxSegments*3)
         self.weights = self.weights * 2 - 1
         self.id = id
         self.sensorNames = []
         self.motorNames = []
         self.existing = 0
+        self.seed = seed
         
     def Set_ID(self, num):
         self.id = num
@@ -25,13 +26,13 @@ class SOLUTION:
         self.Create_World()
         self.Generate_Body()
         self.Generate_Brain()
-        os.system("python simulate.py GUI " + str(self.id))
+        os.system("python simulate.py GUI " + str(self.id) + " " + str(self.seed))
 
     def Start_Simulation(self, dOG):
         self.Create_World()
         self.Generate_Body()
         self.Generate_Brain()
-        os.system("start /B python simulate.py " + dOG + " " + str(self.id))
+        os.system("start /B python simulate.py " + dOG + " " + str(self.id)+ " " + str(self.seed))
 
     def Wait_For_Simulation_To_End(self):
         while not os.path.exists("fitness"+str(self.id)+".txt"):
@@ -59,11 +60,11 @@ class SOLUTION:
 
     def modifyBody(self, seg, dimC):
         if(dimC == 0):
-            self.segLengths[seg] += random.random()
+            self.segLengths[seg] += random.random()-.5
         elif(dimC == 1):
-            self.segWidths[seg] += random.random()
+            self.segWidths[seg] += random.random()-.5
         else:
-            self.segHeights[seg] += random.random()
+            self.segHeights[seg] += random.random()-.5
 
     def Create_World(self):
         pyrosim.Start_SDF("world.sdf")
@@ -76,10 +77,10 @@ class SOLUTION:
         pyrosim.End()
     
     def Generate_Body(self):
-        pyrosim.Start_URDF("body.urdf")
+        pyrosim.Start_URDF("bodies\\"+str(self.seed)+"seedbody"+str(self.id)+".urdf")
 
         if(not self.existing):
-            np.random.seed(c.seed)
+            np.random.seed(self.seed)
             self.segments = np.random.randint(low=5, high=c.maxSegments)        
             self.segLengths = np.random.rand(self.segments)+.01
             self.segHeights = np.random.rand(self.segments)+.3
@@ -208,7 +209,7 @@ class SOLUTION:
 
 
     def Generate_Brain(self):
-        pyrosim.Start_NeuralNetwork("brains\\brain"+str(self.id)+".nndf")
+        pyrosim.Start_NeuralNetwork("brains\\"+str(self.seed)+"seedbrain"+str(self.id)+".nndf")
 
         sensorNames = [*set(self.sensorNames)]
         motorNames = [*set(self.motorNames)]

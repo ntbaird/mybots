@@ -8,11 +8,11 @@ import os
 import constants as c
 
 class ROBOT:
-    def __init__(self, id):
-        self.robotId = p.loadURDF("body.urdf")
+    def __init__(self, id, seed):
         self.id = id
+        self.robotId = p.loadURDF("bodies\\"+str(seed)+"seedbody"+str(self.id)+".urdf")
         pyrosim.Prepare_To_Simulate(self.robotId)
-        self.nn = NEURAL_NETWORK("brains/brain"+str(self.id)+".nndf")
+        self.nn = NEURAL_NETWORK("brains/"+str(seed)+"seedbrain"+str(self.id)+".nndf")
         
 
         self.Prepare_To_Sense()
@@ -61,7 +61,7 @@ class ROBOT:
         yCoordOfLinkZero = positionOfLinkZero[1]
         zCoordOfLinkZero = positionOfLinkZero[2]
 
-        sumCoords = xCoordOfLinkZero
+        sumCoords = xCoordOfLinkZero+yCoordOfLinkZero
 
         f = open("tmp"+str(self.id)+".txt", "w")
         f.write(str(sumCoords))
