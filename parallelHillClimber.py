@@ -20,7 +20,7 @@ class PARALLEL_HILL_CLIMBER:
     def Evolve(self):
         self.Evaluate(self.parents)
         
-        self.parents[0].Evaluate("GUI")
+        #self.parents[0].Evaluate("GUI")
 
         for currentGeneration in range(c.numberOfGenerations):
             self.Evolve_For_One_Generation(currentGeneration)
@@ -72,7 +72,7 @@ class PARALLEL_HILL_CLIMBER:
     def Show_Best(self):
         best = max(self.parents, key = lambda x: self.parents[x].fitness)
         self.parents[best].End_Simulations()
-        #np.save("FitnessProgression"+str(self.seed)+".npy", np.array(self.fitnessProgression))
+        np.save("FitnessProgression"+str(self.seed)+".npy", np.array(self.fitnessProgression))
 
     def saveForPlot(self, gen):
         best = max(self.parents, key = lambda x: self.parents[x].fitness)
